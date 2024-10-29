@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- [Previous head section and styles remain exactly the same until menu items] -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,6 +98,7 @@
             width: 180px;
             height: 180px;
             text-decoration: none;
+            perspective: 1000px;
         }
 
         .menu-card {
@@ -104,7 +106,7 @@
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.6s;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .menu-item:hover .menu-card {
