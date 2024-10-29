@@ -68,8 +68,7 @@
             max-height: 30vh;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            max-height: 35vh;
+            position: relative;
         }
         
         .speaker {
@@ -89,9 +88,16 @@
         }
         
         .choice-container {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 0;
+            right: 0;
             display: none;
             gap: 12px;
-            flex-direction: column;
+            flex-direction: row;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0 20px;
         }
         
         .choice-btn {
@@ -104,6 +110,9 @@
             transition: all 0.4s ease;
             font-size: 1.1em;
             text-shadow: 0 0 8px rgba(255, 158, 205, 0.4);
+            min-width: 200px;
+            margin: 0 5px;
+            white-space: nowrap;
         }
         
         .choice-btn:hover {
