@@ -288,81 +288,102 @@
         }
     </style>
 </head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <body>
     <div class="background-gradient"></div>
     
     <nav class="nav">
-        <h1 class="title">BFS Pathfinding Visualizer</h1>
+        <h1 class="title">Visualizador de Busca em Largura</h1>
     </nav>
 
     <div class="container">
         <div class="tutorial">
-            <h2>How it Works</h2>
-            <p>🎯 Watch how the Breadth-First Search (BFS) algorithm finds the shortest path!</p>
-            <p>🎲 Generate random mazes and see how BFS navigates through them</p>
-            <p>📍 Set start and end points to see different paths</p>
-            <p>🔍 Numbers show the order of visited cells</p>
-            <p>➡️ Arrows point back to retrace the path</p>
+            <h2>Como Funciona</h2>
+            <p>🎯 Observe como o algoritmo de Busca em Largura (BFS) encontra o menor caminho!</p>
+            <p>🎲 Crie labirintos aleatórios e veja como o BFS navega através deles</p>
+            <p>📍 Defina pontos de início e fim para ver diferentes caminhos</p>
+            <p>🔍 Os números mostram a ordem das células visitadas</p>
+            <p>➡️ As setas apontam o caminho de volta</p>
         </div>
 
         <div class="controls">
             <button class="btn" id="generateMaze">
                 <i class="fas fa-dice"></i>
-                Generate Maze
+                Gerar Labirinto
             </button>
             <button class="btn" id="setStart">
                 <i class="fas fa-play"></i>
-                Set Start
+                Definir Início
             </button>
             <button class="btn" id="setEnd">
                 <i class="fas fa-flag-checkered"></i>
-                Set End
+                Definir Fim
             </button>
             <button class="btn" id="startBFS">
                 <i class="fas fa-search"></i>
-                Run BFS
+                Iniciar BFS
             </button>
             <button class="btn" id="reset">
                 <i class="fas fa-redo"></i>
-                Reset
+                Reiniciar
             </button>
         </div>
 
         <div class="legend">
             <div class="legend-item">
                 <div class="legend-color" style="background: var(--start)"></div>
-                <span>Start</span>
+                <span>Início</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: var(--end)"></div>
-                <span>End</span>
+                <span>Fim</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: var(--wall)"></div>
-                <span>Wall</span>
+                <span>Parede</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: var(--visited)"></div>
-                <span>Visited</span>
+                <span>Visitado</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: var(--path)"></div>
-                <span>Path</span>
+                <span>Caminho</span>
             </div>
         </div>
 
-        <div id="status" class="status">Select start and end points or generate a maze!</div>
+        <div id="status" class="status">Selecione os pontos de início e fim ou gere um labirinto!</div>
         
         <div id="grid" class="grid"></div>
     </div>
 
     <script>
-        // Grid configuration
+        // Configuração da grade
         const GRID_ROWS = 12;
         const GRID_COLS = 12;
         const WALL_PROBABILITY = 0.3;
 
-        // Cell states
+        // Estados das células
         const EMPTY = 'empty';
         const WALL = 'wall';
         const START = 'start';
@@ -370,7 +391,7 @@
         const VISITED = 'visited';
         const PATH = 'path';
 
-        // Game state
+        // Estado do jogo
         let grid = [];
         let startCell = null;
         let endCell = null;
@@ -378,7 +399,7 @@
         let isSettingEnd = false;
         let isRunning = false;
 
-        // Initialize the grid
+        // Inicializa a grade
         function initializeGrid() {
             const gridElement = document.getElementById('grid');
             gridElement.innerHTML = '';
@@ -403,7 +424,7 @@
             }
         }
 
-        // Create a cell element
+        // Cria um elemento de célula
         function createCell(row, col) {
             const cell = document.createElement('div');
             cell.className = 'cell';
@@ -413,14 +434,14 @@
             cell.addEventListener('click', () => handleCellClick(row, col));
             cell.addEventListener('mouseenter', () => {
                 if (!isRunning) {
-                    updateStatus(`Cell (${row}, ${col})`);
+                    updateStatus(`Célula (${row}, ${col})`);
                 }
             });
             
             return cell;
         }
 
-        // Generate random maze
+        // Gera labirinto aleatório
         function generateMaze() {
             resetGrid();
             grid.forEach(row => {
@@ -430,16 +451,16 @@
                     }
                 });
             });
-            updateStatus('Maze generated! Set start and end points.');
+            updateStatus('Labirinto gerado! Defina os pontos de início e fim.');
         }
 
-        // Set cell state and update visualization
+        // Define o estado da célula e atualiza a visualização
         function setCellState(cell, state) {
             cell.state = state;
             cell.element.className = `cell ${state}`;
         }
 
-        // Handle cell clicks
+        // Lida com cliques nas células
         function handleCellClick(row, col) {
             if (isRunning) return;
             
@@ -451,13 +472,14 @@
                 setCellState(cell, START);
                 isSettingStart = false;
                 document.getElementById('setStart').classList.remove('active');
-                updateStatus('Start point set! Now set an end point.');
-            } else if (isSettingEnd) {if (endCell) setCellState(endCell, EMPTY);
+                updateStatus('Ponto inicial definido! Agora defina o ponto final.');
+            } else if (isSettingEnd) {
+                if (endCell) setCellState(endCell, EMPTY);
                 endCell = cell;
                 setCellState(cell, END);
                 isSettingEnd = false;
                 document.getElementById('setEnd').classList.remove('active');
-                updateStatus('End point set! Click "Run BFS" to find the path.');
+                updateStatus('Ponto final definido! Clique em "Iniciar BFS" para encontrar o caminho.');
             } else if (cell.state === EMPTY) {
                 setCellState(cell, WALL);
             } else if (cell.state === WALL) {
@@ -465,15 +487,15 @@
             }
         }
 
-        // BFS Implementation
+        // Implementação do BFS
         async function runBFS() {
             if (!startCell || !endCell) {
-                updateStatus('Please set both start and end points first!');
+                updateStatus('Por favor, defina os pontos de início e fim primeiro!');
                 return;
             }
             
             isRunning = true;
-            updateStatus('Running BFS...');
+            updateStatus('Executando BFS...');
             
             const queue = [[startCell]];
             const visited = new Set();
@@ -486,7 +508,7 @@
                 if (current === endCell) {
                     await visualizePath(path);
                     isRunning = false;
-                    updateStatus('Path found! 🎉');
+                    updateStatus('Caminho encontrado! 🎉');
                     return;
                 }
                 
@@ -496,10 +518,9 @@
                     if (current !== startCell && current !== endCell) {
                         setCellState(current, VISITED);
                         current.element.innerHTML = `<span class="step-number">${++stepCount}</span>`;
-                        await sleep(50); // Animation delay
+                        await sleep(50);
                     }
                     
-                    // Get neighboring cells
                     const neighbors = getNeighbors(current);
                     
                     for (const neighbor of neighbors) {
@@ -513,13 +534,13 @@
             }
             
             isRunning = false;
-            updateStatus('No path found! 😢');
+            updateStatus('Nenhum caminho encontrado! 😢');
         }
 
-        // Get valid neighboring cells
+        // Obtém células vizinhas válidas
         function getNeighbors(cell) {
             const neighbors = [];
-            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // Up, Down, Left, Right
+            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // Cima, Baixo, Esquerda, Direita
             
             for (const [dx, dy] of directions) {
                 const newRow = cell.row + dx;
@@ -537,13 +558,12 @@
             return neighbors;
         }
 
-        // Visualize the found path
+        // Visualiza o caminho encontrado
         async function visualizePath(path) {
             for (let i = 1; i < path.length - 1; i++) {
                 const cell = path[i];
                 setCellState(cell, PATH);
                 
-                // Add direction arrow
                 const prev = path[i - 1];
                 const next = path[i + 1];
                 
@@ -556,16 +576,16 @@
                 else if (next.col > cell.col) arrow.className += ' fa-arrow-right arrow-right';
                 
                 cell.element.appendChild(arrow);
-                await sleep(100); // Animation delay
+                await sleep(100);
             }
         }
 
-        // Helper function for animations
+        // Função auxiliar para animações
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // Reset the grid
+        // Reinicia a grade
         function resetGrid() {
             grid.forEach(row => {
                 row.forEach(cell => {
@@ -581,10 +601,10 @@
             isSettingStart = false;
             isSettingEnd = false;
             isRunning = false;
-            updateStatus('Grid reset! Select start and end points or generate a maze.');
+            updateStatus('Grade reiniciada! Selecione os pontos de início e fim ou gere um labirinto.');
         }
 
-        // Update status message
+        // Atualiza mensagem de status
         function updateStatus(message) {
             document.getElementById('status').textContent = message;
         }
@@ -601,7 +621,7 @@
                     isSettingEnd = false;
                     document.getElementById('setStart').classList.add('active');
                     document.getElementById('setEnd').classList.remove('active');
-                    updateStatus('Select a starting point...');
+                    updateStatus('Selecione um ponto de início...');
                 }
             });
             
@@ -611,7 +631,7 @@
                     isSettingStart = false;
                     document.getElementById('setEnd').classList.add('active');
                     document.getElementById('setStart').classList.remove('active');
-                    updateStatus('Select an ending point...');
+                    updateStatus('Selecione um ponto final...');
                 }
             });
             
@@ -626,3 +646,15 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+    
