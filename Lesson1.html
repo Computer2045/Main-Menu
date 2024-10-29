@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Search Algorithms - AI Guide</title>
+    <title>Algoritmos de Busca - Guia IA</title>
     <style>
         body {
             margin: 0;
@@ -234,7 +234,7 @@
 
             // Draw female robot
             ctx.save();
-            ctx.translate(0, Math.sin(time / 1000) * 5); // Floating animation
+            ctx.translate(0, Math.sin(time / 1000) * 5);
 
             // Hair
             ctx.fillStyle = 'rgba(255, 158, 205, 0.3)';
@@ -268,7 +268,6 @@
             ctx.shadowColor = 'rgba(255, 158, 205, 0.5)';
             ctx.shadowBlur = 10;
 
-            // Larger, more anime-style eyes
             ctx.beginPath();
             ctx.ellipse(centerX - 15, centerY - 20, 8, 12, 0, 0, Math.PI * 2);
             ctx.fill();
@@ -277,7 +276,6 @@
             ctx.ellipse(centerX + 15, centerY - 20, 8, 12, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Add eye highlights
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
             ctx.beginPath();
             ctx.arc(centerX - 17, centerY - 23, 3, 0, Math.PI * 2);
@@ -337,14 +335,12 @@
             for (let i = 0; i < 3; i++) {
                 const offset = Math.sin(time / 1000 + i) * 5;
                 
-                // Left side circuits
                 ctx.beginPath();
                 ctx.moveTo(centerX - 30, centerY + 70 + i * 15);
                 ctx.lineTo(centerX - 20 + offset, centerY + 75 + i * 15);
                 ctx.lineTo(centerX - 25, centerY + 80 + i * 15);
                 ctx.stroke();
 
-                // Right side circuits
                 ctx.beginPath();
                 ctx.moveTo(centerX + 30, centerY + 70 + i * 15);
                 ctx.lineTo(centerX + 20 - offset, centerY + 75 + i * 15);
@@ -363,44 +359,54 @@
 
         animate();
 
-        // Dialog system
+        // Enhanced dialogue system with better Portuguese explanations
         const dialogues = [
             {
                 speaker: "ARIA",
                 text: "Oi! Eu sou a ARIA, sua assistente pessoal de algoritmos! Que tal explorarmos juntos o incrível mundo das buscas computacionais?",
-                choices: ["Claro, adoraria aprender!", "Me conta mais sobre você primeiro!"]
+                choices: ["Claro, adoraria aprender!", "Quero te conhecer melhor primeiro!"]
             },
             {
                 speaker: "ARIA",
-                text: "Que legal! Vamos começar com algo que você faz todos os dias sem perceber - procurar coisas! Sabe quando você procura um livro na sua estante? Os computadores fazem algo parecido, só que muito mais rápido!",
+                text: "Legal! Antes de começarmos, vou te explicar um pouquinho sobre algoritmos de busca. São como receitas que o computador usa para encontrar informações, igual quando você procura algo no Google ou na sua lista de contatos do celular!",
                 showVisualization: false
             },
             {
                 speaker: "ARIA",
-                text: "Deixa eu te mostrar o jeito mais básico de fazer uma busca - a Busca Linear. É como quando você está procurando suas chaves e olha em cada canto da casa, um por um. Olha só como funciona!",
+                text: "Imagina que você está procurando um número de telefone numa agenda. Tem dois jeitos principais de fazer isso: olhar número por número (busca linear) ou usar a ordem alfabética pra ir mais rápido (busca binária). Vamos ver como cada um funciona?",
+                showVisualization: false
+            },
+            {
+                speaker: "ARIA",
+                text: "Primeiro, vamos ver a Busca Linear! É o método mais simples: verificamos cada número, um por um, até encontrar o que procuramos. É como procurar uma chave perdida na casa, olhando em cada lugar possível!",
                 showVisualization: true
             },
             {
                 speaker: "ARIA",
-                text: "✨ Iniciando simulação... Vamos procurar o número 7! Observe como eu verifico cada número, um de cada vez, igual você faria!",
+                text: "✨ Olha só! Vamos procurar o número 7 usando a Busca Linear. Vou verificar cada número, um de cada vez. Percebe como eu preciso olhar cada elemento até encontrar o que procuro?",
                 showVisualization: true,
                 animate: "linearSearch"
             },
             {
                 speaker: "ARIA",
-                text: "Agora vem a parte mais legal - a Busca Binária! Já pensou como você procura uma palavra no dicionário? Você abre no meio e já elimina metade das páginas de uma vez, né? É exatamente assim que funciona!",
+                text: "Agora vem a parte mais legal - a Busca Binária! 🌟 Ela é muito mais esperta: sempre divide o espaço de busca pela metade. É como quando você procura uma palavra no dicionário: abre no meio e já sabe se precisa ir para frente ou para trás!",
+                showVisualization: true
+            },
+            {
+                speaker: "ARIA",
+                text: "Vamos procurar o número 7 de novo, mas agora com a Busca Binária. Observe como ela é mais eficiente, eliminando metade das possibilidades em cada etapa!",
                 showVisualization: true,
                 animate: "binarySearch"
             },
             {
                 speaker: "ARIA",
-                text: "Incrível, não é? A Busca Binária é tipo um super poder - ela é mais ou menos 73% mais rápida! É como se você tivesse um sexto sentido pra saber exatamente onde procurar! ✨",
+                text: "Incrível, né? A Busca Binária é tipo um super poder! Ela é muito mais rápida porque elimina metade das opções em cada tentativa. Por isso que sites e aplicativos conseguem encontrar coisas tão rápido em meio a milhões de dados! 🚀",
                 showVisualization: true
             },
             {
                 speaker: "ARIA",
-                text: "E aí, quer ver essas buscas de novo ou vamos explorar outros algoritmos ainda mais fascinantes?",
-                choices: ["Quero ver a Busca Linear de novo!", "Mostra a Busca Binária mais uma vez!", "Me conta sobre outros algoritmos!"]
+                text: "E aí, o que você achou? Quer ver alguma das buscas novamente ou quer conhecer outros algoritmos legais?",
+                choices: ["Quero ver a Busca Linear de novo!", "Mostra a Busca Binária mais uma vez!", "Me mostra outros algoritmos!"]
             }
         ];
 
@@ -490,16 +496,28 @@
         }
 
         function handleChoice(choice) {
+            // Reset all elements to their default state
+            const elements = document.querySelectorAll('.array-element');
+            elements.forEach(element => {
+                element.style.opacity = '1';
+                element.style.background = '';
+                element.classList.remove('highlight');
+            });
+
             switch(choice) {
+                case "Claro, adoraria aprender!":
+                case "Quero te conhecer melhor primeiro!":
+                    currentDialogue = 1;
+                    break;
                 case "Quero ver a Busca Linear de novo!":
-                    currentDialogue = 2;
+                    currentDialogue = 4; // Show the linear search animation
                     break;
                 case "Mostra a Busca Binária mais uma vez!":
-                    currentDialogue = 4;
+                    currentDialogue = 6; // Show the binary search animation
                     break;
-                case "Me conta sobre outros algoritmos!":
+                case "Me mostra outros algoritmos!":
                     window.location.href = "Lesson1_2.html";
-                    break;
+                    return; // Return here to prevent updateDialogue from running
                 default:
                     currentDialogue++;
             }
@@ -508,7 +526,7 @@
 
         function updateDialogue() {
             if (currentDialogue >= dialogues.length) {
-                currentDialogue = 0;
+                currentDialogue = dialogues.length - 1; // Stay on the last dialogue instead of resetting
             }
 
             const dialogue = dialogues[currentDialogue];
@@ -519,9 +537,9 @@
             if (dialogue.showVisualization) {
                 createArray();
                 if (dialogue.animate === 'linearSearch') {
-                    animateLinearSearch();
+                    setTimeout(() => animateLinearSearch(), 100);
                 } else if (dialogue.animate === 'binarySearch') {
-                    animateBinarySearch();
+                    setTimeout(() => animateBinarySearch(), 100);
                 }
             }
 
