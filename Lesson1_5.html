@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greedy Best First Search - Visualização Interativa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #4338ca;
+            --accent: #f59e0b;
+            --background: #0f172a;
+            --text: #f8fafc;
+            --success: #22c55e;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            opacity: 0;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 0.5rem rgba(37, 99, 235, 0.3));
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+            opacity: 0;
+        }
+
+        .explanation {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 2rem rgba(37, 99, 235, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .maze-container {
+            position: relative;
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        #maze {
+            width: 100%;
+            height: 100%;
+        }
+
+        .cell {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 2;
+            transition: fill 0.3s ease;
+        }
+
+        .wall { fill: var(--secondary); }
+        .start { fill: #22c55e; }
+        .end { fill: #dc2626; }
+        .path { fill: var(--accent); }
+        .visited { fill: rgba(37, 99, 235, 0.3); }
+        .current {
+            fill: var(--accent);
+            filter: drop-shadow(0 0 0.5rem var(--accent));
+        }
+
+        .control-panel {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+
+        button {
+            background: var(--primary);
+            color: var(--text);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(245, 158, 11, 0.3);
+        }
+
+        button:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #continueBtn {
+            background: var(--success);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #continueBtn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .celebrating {
+            background: linear-gradient(45deg, var(--success), var(--accent), var(--primary));
+            background-size: 200% 200%;
+            animation: celebrate 4s ease infinite;
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 8s infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Greedy Best First Search</h1>
+            <p class="subtitle">
+                Uma jornada visual pelo algoritmo de busca gulosa, onde cada passo é guiado pela promessa do caminho mais próximo ao objetivo.
+            </p>
+        </header>
+
+        <div class="content">
+            <div class="explanation">
+                <h2>O que é Greedy Best First Search?</h2>
+                <p>
+                    O algoritmo Greedy Best First Search é uma estratégia de busca que sempre escolhe o caminho que parece mais promissor em direção ao objetivo, baseando-se em uma função heurística.
+                </p>
+                <p>
+                    Diferente de outros algoritmos de busca, o GBFS:
+                </p>
+                <ul>
+                    <li>Prioriza o caminho que parece mais próximo do objetivo</li>
+                    <li>Não considera o custo do caminho percorrido</li>
+                    <li>Pode não encontrar o caminho mais curto</li>
+                    <li>É mais rápido que buscas extensivas como BFS</li>
+                </ul>
+                <p>
+                    No labirinto ao lado, o algoritmo usa a distância Manhattan até o objetivo como heurística para decidir qual será o próximo movimento.
+                </p>
+            </div>
+            <div class="maze-container">
+                <svg id="maze" viewBox="0 0 500 500"></svg>
+                <div class="control-panel">
+                    <button id="startBtn">Iniciar Busca</button>
+                    <button id="resetBtn">Resetar</button>
+                    <button id="continueBtn">Continuar Aula</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        const particles = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 8}s`;
+            particles.appendChild(particle);
+        }
+
+        // Initialize GSAP animations
+        gsap.to('.header', {
+            opacity: 1,
+            duration: 1,
+            ease: 'power2.out',
+            y: 20,
+        });
+
+        gsap.to('.content', {
+            opacity: 1,
+            duration: 1,
+            delay: 0.5,
+            ease: 'power2.out',
+            y: 20,
+        });
+
+        const MAZE_SIZE = 15;
+        const CELL_SIZE = 500 / MAZE_SIZE;
+        
+        class Cell {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.isWall = Math.random() < 0.3;
+                this.isVisited = false;
+                this.isPath = false;
+                this.element = null;
+            }
+        }
+
+        class Maze {
+            constructor() {
+                this.grid = [];
+                this.start = { x: 1, y: 1 };
+                this.end = { x: MAZE_SIZE - 2, y: MAZE_SIZE - 2 };
+                this.currentCell = null;
+                this.initializeMaze();
+            }
+
+            initializeMaze() {
+                for (let y = 0; y < MAZE_SIZE; y++) {
+                    const row = [];
+                    for (let x = 0; x < MAZE_SIZE; x++) {
+                        row.push(new Cell(x, y));
+                    }
+                    this.grid.push(row);
+                }
+
+                // Ensure start and end are not walls
+                this.grid[this.start.y][this.start.x].isWall = false;
+                this.grid[this.end.y][this.end.x].isWall = false;
+
+                // Ensure there's a path around start and end
+                const clearAround = (x, y) => {
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const newX = x + dx;
+                            const newY = y + dy;
+                            if (newX >= 0 && newX < MAZE_SIZE && newY >= 0 && newY < MAZE_SIZE) {
+                                if (Math.random() < 0.6) {
+                                    this.grid[newY][newX].isWall = false;
+                                }
+                            }
+                        }
+                    }
+                };
+
+                clearAround(this.start.x, this.start.y);
+                clearAround(this.end.x, this.end.y);
+            }
+
+            manhattanDistance(from, to) {
+                return Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
+            }
+
+            getNeighbors(cell) {
+                const neighbors = [];
+                const directions = [
+                    { x: 0, y: -1 },
+                    { x: 1, y: 0 },
+                    { x: 0, y: 1 },
+                    { x: -1, y: 0 }
+                ];
+
+                for (const dir of directions) {
+                    const newX = cell.x + dir.x;
+                    const newY = cell.y + dir.y;
+
+                    if (newX >= 0 && newX < MAZE_SIZE && 
+                        newY >= 0 && newY < MAZE_SIZE && 
+                        !this.grid[newY][newX].isWall &&
+                        !this.grid[newY][newX].isVisited) {
+                        neighbors.push(this.grid[newY][newX]);
+                    }
+                }
+
+                return neighbors;
+            }
+
+            async findPath() {
+                const openSet = [this.grid[this.start.y][this.start.x]];
+                const path = new Map();
+
+                while (openSet.length > 0) {
+                    openSet.sort((a, b) => {
+                        return this.manhattanDistance(a, this.end) - 
+                               this.manhattanDistance(b, this.end);
+                    });
+
+                    const current = openSet.shift();
+                    if (current.x === this.end.x && current.y === this.end.y) {
+                        this.grid[this.end.y][this.end.x].element.classList.add('celebrating');
+                        document.getElementById('continueBtn').classList.add('visible');
+                        return true;
+                    }
+
+                    current.isVisited = true;
+                    this.currentCell = current;
+                    current.element.classList.add('visited');
+                    current.element.classList.add('current');
+
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    current.element.classList.remove('current');
+
+                    const neighbors = this.getNeighbors(current);
+                    for (const neighbor of neighbors) {
+                        openSet.push(neighbor);
+                        path.set(neighbor, current);
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        const maze = new Maze();
+        const svg = document.getElementById('maze');
+
+        function drawMaze() {
+            svg.innerHTML = '';
+            for (let y = 0; y < MAZE_SIZE; y++) {
+                for (let x = 0; x < MAZE_SIZE; x++) {
+                    const cell = maze.grid[y][x];
+                    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    rect.setAttribute('x', x * CELL_SIZE);
+                    rect.setAttribute('y', y * CELL_SIZE);
+                    rect.setAttribute('width', CELL_SIZE);
+                    rect.setAttribute('height', CELL_SIZE);
+                    rect.classList.add('cell');
+
+                    if (cell.isWall) rect.classList.add('wall');
+                    if (x === maze.start.x && y === maze.start.y) rect.classList.add('start');
+                    if (x === maze.end.x && y === maze.end.y) rect.classList.add('end');
+
+                    cell.element = rect;
+                    svg.appendChild(rect);
+                }
+            }
+        }
+
+        function checkMazeSolvable() {
+            const visited = new Set();
+            const stack = [{ x: maze.start.x, y: maze.start.y }];
+
+            while (stack.length > 0) {
+                const current = stack.pop();
+                const key = `${current.x},${current.y}`;
+
+                if (current.x === maze.end.x && current.y === maze.end.y) {
+                    return true;
+                }
+
+                if (!visited.has(key)) {
+                    visited.add(key);
+                    const neighbors = [
+                        { x: current.x, y: current.y - 1 },
+                        { x: current.x + 1, y: current.y },
+                        { x: current.x, y: current.y + 1 },
+                        { x: current.x - 1, y: current.y }
+                    ];
+
+                    for (const neighbor of neighbors) {
+                        if (neighbor.x >= 0 && neighbor.x < MAZE_SIZE &&
+                            neighbor.y >= 0 && neighbor.y < MAZE_SIZE &&
+                            !maze.grid[neighbor.y][neighbor.x].isWall) {
+                            stack.push(neighbor);
+                        }}
+                }
+            }
+            return false;
+        }
+
+        function initializeSolvableMaze() {
+            do {
+                maze.grid = [];
+                maze.initializeMaze();
+            } while (!checkMazeSolvable());
+            drawMaze();
+        }
+
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            const startBtn = document.getElementById('startBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            startBtn.disabled = true;
+
+            const found = await maze.findPath();
+            if (!found) {
+                alert('Não foi possível encontrar um caminho!');
+                startBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            // Reset all cells
+            maze.grid.forEach(row => {
+                row.forEach(cell => {
+                    cell.isVisited = false;
+                    cell.isPath = false;
+                    if (cell.element) {
+                        cell.element.classList.remove('visited', 'path', 'current', 'celebrating');
+                    }
+                });
+            });
+            
+            // Reset controls
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('continueBtn').classList.remove('visible');
+            
+            // Generate new maze
+            initializeSolvableMaze();
+        });
+
+        document.getElementById('continueBtn').addEventListener('click', () => {
+            window.location.href = 'Lesson1_6.html';
+        });
+
+        // Initial draw with solvable maze
+        initializeSolvableMaze();
+    </script>
+</body>
+</html>
