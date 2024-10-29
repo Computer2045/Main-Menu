@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorador BFS - Lição 1.3</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a2e 0%, #1a1a4f 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(77, 208, 225, 0.3);
+            box-shadow: 0 0 20px rgba(77, 208, 225, 0.2);
+        }
+
+        .maze-container {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(77, 208, 225, 0.2);
+            position: relative;
+        }
+
+        .maze {
+            display: grid;
+            gap: 3px;
+            width: 100%;
+            height: 100%;
+            max-width: 700px;
+            max-height: 700px;
+        }
+
+        .cell {
+            background: rgba(42, 42, 62, 0.6);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .wall { 
+            background: rgba(26, 26, 46, 0.8);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .start { 
+            background: #4caf50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .end { 
+            background: #f44336;
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .visited { 
+            background: rgba(77, 208, 225, 0.6);
+            box-shadow: 0 0 15px rgba(77, 208, 225, 0.3);
+        }
+
+        .path { 
+            background: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: pathGlow 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pathGlow {
+            0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+            100% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.7); }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4dd0e1, #26c6da);
+            color: #fff;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(77, 208, 225, 0.5);
+        }
+
+        .btn:disabled {
+            background: linear-gradient(135deg, #4dd0e160, #26c6da60);
+            cursor: not-allowed;
+        }
+
+        #continuarBtn {
+            display: none;
+            background: linear-gradient(135deg, #7e57c2, #5e35b1);
+        }
+
+        .stats {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(77, 208, 225, 0.2);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .speed-control {
+            margin: 20px 0;
+        }
+
+        .speed-control input {
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4dd0e1;
+            font-size: 1.8em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(77, 208, 225, 0.5);
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(77, 208, 225, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="control-panel">
+            <h2 class="title">Controles</h2>
+            <button id="startBtn" class="btn">Começar</button>
+            <button id="resetBtn" class="btn" disabled>Reiniciar</button>
+            
+            <div class="speed-control">
+                <label>Velocidade:</label>
+                <input type="range" id="speedSlider" min="1" max="10" value="5">
+                <div class="stat-item">
+                    <span>Velocidade Atual:</span>
+                    <span id="speedValue">5x</span>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span>Células Visitadas:</span>
+                    <span id="visitedCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Comprimento do Caminho:</span>
+                    <span id="pathLength">0</span>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color start"></div>
+                    <span>Início</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color end"></div>
+                    <span>Fim</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color visited"></div>
+                    <span>Visitado</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color path"></div>
+                    <span>Caminho</span>
+                </div>
+            </div>
+
+            <button id="continuarBtn" class="btn">Continuar Aula</button>
+        </div>
+
+        <div class="maze-container">
+            <div id="maze" class="maze"></div>
+        </div>
+    </div>
+
+    <script>
+        class BFSMaze {
+            constructor(size = 15) {
+                this.size = size;
+                this.maze = [];
+                this.start = [1, 1];
+                this.end = [size-2, size-2];
+                this.running = false;
+                this.speed = 5;
+                this.visitedCount = 0;
+                this.pathLength = 0;
+                this.hasReachedGoal = false;
+                
+                this.initializeMaze();
+                this.createMazeDOM();
+                this.setupEventListeners();
+            }
+
+            initializeMaze() {
+                for (let i = 0; i < this.size; i++) {
+                    this.maze[i] = [];
+                    for (let j = 0; j < this.size; j++) {
+                        if (i === 0 || i === this.size-1 || j === 0 || j === this.size-1 ||
+                            (Math.random() < 0.3 && !(i === this.start[0] && j === this.start[1]) &&
+                             !(i === this.end[0] && j === this.end[1]))) {
+                            this.maze[i][j] = 1; // Wall
+                        } else {
+                            this.maze[i][j] = 0; // Path
+                        }
+                    }
+                }
+                
+                this.maze[this.start[0]][this.start[1]] = 0;
+                this.maze[this.end[0]][this.end[1]] = 0;
+                
+                // Ensure path exists
+                this.clearPathToEnd();
+            }
+
+            clearPathToEnd() {
+                // Clear a rough path to ensure the end is reachable
+                let currentX = this.start[0];
+                let currentY = this.start[1];
+                
+                while (currentX < this.end[0]) {
+                    currentX++;
+                    this.maze[currentX][currentY] = 0;
+                }
+                while (currentY < this.end[1]) {
+                    currentY++;
+                    this.maze[currentX][currentY] = 0;
+                }
+            }
+
+            createMazeDOM() {
+                const mazeElement = document.getElementById('maze');
+                mazeElement.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`;
+
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.id = `cell-${i}-${j}`;
+                        
+                        if (this.maze[i][j] === 1) {
+                            cell.classList.add('wall');
+                        }
+                        if (i === this.start[0] && j === this.start[1]) {
+                            cell.classList.add('start');
+                        }
+                        if (i === this.end[0] && j === this.end[1]) {
+                            cell.classList.add('end');
+                        }
+                        
+                        mazeElement.appendChild(cell);
+                    }
+                }
+            }
+
+            async bfs() {
+                const queue = [[this.start[0], this.start[1]]];
+                const visited = new Set();
+                const parent = new Map();
+                this.running = true;
+
+                while (queue.length > 0 && this.running) {
+                    const [row, col] = queue.shift();
+                    const key = `${row},${col}`;
+
+                    if (!visited.has(key)) {
+                        visited.add(key);
+                        this.visitedCount++;
+                        document.getElementById('visitedCount').textContent = this.visitedCount;
+
+                        if (row === this.end[0] && col === this.end[1]) {
+                            await this.reconstructPath(parent);
+                            this.running = false;
+                            if (!this.hasReachedGoal) {
+                                this.hasReachedGoal = true;
+                                const continueBtn = document.getElementById('continuarBtn');
+                                continueBtn.style.display = 'block';
+                            }
+                            document.getElementById('resetBtn').disabled = false;
+                            break;
+                        }
+
+                        const cell = document.getElementById(`cell-${row}-${col}`);
+                        if (!cell.classList.contains('start') && !cell.classList.contains('end')) {
+                            cell.classList.add('visited');
+                        }
+
+                        const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+                        for (const [dr, dc] of directions) {
+                            const newRow = row + dr;
+                            const newCol = col + dc;
+                            const newKey = `${newRow},${newCol}`;
+
+                            if (this.isValid(newRow, newCol) && !visited.has(newKey)) {
+                                queue.push([newRow, newCol]);
+                                parent.set(newKey, key);
+                            }
+                        }
+
+                        await new Promise(r => setTimeout(r, 1000 / this.speed));
+                    }
+                }
+            }
+
+            async reconstructPath(parent) {
+                let current = `${this.end[0]},${this.end[1]}`;
+                const path = [];
+
+                while (current) {
+                    const [row, col] = current.split(',').map(Number);
+                    path.unshift([row, col]);
+                    current = parent.get(current);
+                }
+
+                this.pathLength = path.length - 1;
+                document.getElementById('pathLength').textContent = this.pathLength;
+
+                for (const [row, col] of path) {
+                    const cell = document.getElementById(`cell-${row}-${col}`);
+                    if (!cell.classList.contains('start') && !cell.classList.contains('end')) {
+                        cell.classList.add('path');
+                        await new Promise(r => setTimeout(r, 50));
+                    }
+                }
+            }
+
+            isValid(row, col) {
+                return row >= 0 && row < this.size && col >= 0 && col < this.size && this.maze[row][col] === 0;
+            }
+
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.bfs();
+                    document.getElementById('startBtn').disabled = true;
+                });
+
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    location.reload();
+                });
+
+                document.getElementById('speedSlider').addEventListener('input', (e) => {
+                    this.speed = parseInt(e.target.value);
+                    document.getElementById('speedValue').textContent = `${this.speed}x`;
+                });
+
+                document.getElementById('continuarBtn').addEventListener('click', () => {
+                    window.location.href = 'Lesson1_4.html';
+                });
+            }
+        }
+
+        // Initialize the maze when the page loads
+        window.onload = () => new BFSMaze(15);
+    </script>
+</body>
+</html>
