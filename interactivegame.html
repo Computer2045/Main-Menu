@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BFS Pathfinding Visualizer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #8b5cf6;
+            --background: #1e1b4b;
+            --cell-bg: #312e81;
+            --wall: #1e1b4b;
+            --grid-bg: #2e1065;
+            --start: #22c55e;
+            --end: #ec4899;
+            --visited: #7c3aed;
+            --path: #eab308;
+            --text: #e0e7ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .nav {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn.active {
+            background: var(--accent);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
+        }
+
+        .btn i {
+            font-size: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 4px;
+            padding: 4px;
+            background: var(--grid-bg);
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3),
+                        0 0 60px rgba(139, 92, 246, 0.2);
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.5rem;
+            background: var(--cell-bg);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .cell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .cell.wall {
+            background: var(--wall);
+            transform: scale(0.95);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell.start {
+            background: var(--start);
+            animation: pulse-start 2s infinite;
+        }
+
+        .cell.end {
+            background: var(--end);
+            animation: pulse-end 2s infinite;
+        }
+
+        .cell.visited {
+            background: var(--visited);
+            animation: scale-up 0.3s ease-out;
+        }
+
+        .cell.path {
+            background: var(--path);
+            animation: scale-up 0.3s ease-out;
+        }
+
+        @keyframes scale-up {
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse-start {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        @keyframes pulse-end {
+            0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(236, 72, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+        }
+
+        .step-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .arrow {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .arrow-up { top: 2px; }
+        .arrow-down { bottom: 2px; }
+        .arrow-left { left: 5px; }
+        .arrow-right { right: 5px; }
+
+        .status {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            text-align: center;
+            min-height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tutorial {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .tutorial h2 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .tutorial p {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+
+            .cell {
+                width: 40px;
+                height: 40px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tutorial {
+                margin: 1rem;
+                padding: 1rem;
+            }
+        }
+
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+                        radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.1) 0%, transparent 60%);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-gradient"></div>
+    
+    <nav class="nav">
+        <h1 class="title">BFS Pathfinding Visualizer</h1>
+    </nav>
+
+    <div class="container">
+        <div class="tutorial">
+            <h2>How it Works</h2>
+            <p>🎯 Watch how the Breadth-First Search (BFS) algorithm finds the shortest path!</p>
+            <p>🎲 Generate random mazes and see how BFS navigates through them</p>
+            <p>📍 Set start and end points to see different paths</p>
+            <p>🔍 Numbers show the order of visited cells</p>
+            <p>➡️ Arrows point back to retrace the path</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="generateMaze">
+                <i class="fas fa-dice"></i>
+                Generate Maze
+            </button>
+            <button class="btn" id="setStart">
+                <i class="fas fa-play"></i>
+                Set Start
+            </button>
+            <button class="btn" id="setEnd">
+                <i class="fas fa-flag-checkered"></i>
+                Set End
+            </button>
+            <button class="btn" id="startBFS">
+                <i class="fas fa-search"></i>
+                Run BFS
+            </button>
+            <button class="btn" id="reset">
+                <i class="fas fa-redo"></i>
+                Reset
+            </button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--start)"></div>
+                <span>Start</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--end)"></div>
+                <span>End</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--wall)"></div>
+                <span>Wall</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--visited)"></div>
+                <span>Visited</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--path)"></div>
+                <span>Path</span>
+            </div>
+        </div>
+
+        <div id="status" class="status">Select start and end points or generate a maze!</div>
+        
+        <div id="grid" class="grid"></div>
+    </div>
+
+    <script>
+        // Grid configuration
+        const GRID_ROWS = 12;
+        const GRID_COLS = 12;
+        const WALL_PROBABILITY = 0.3;
+
+        // Cell states
+        const EMPTY = 'empty';
+        const WALL = 'wall';
+        const START = 'start';
+        const END = 'end';
+        const VISITED = 'visited';
+        const PATH = 'path';
+
+        // Game state
+        let grid = [];
+        let startCell = null;
+        let endCell = null;
+        let isSettingStart = false;
+        let isSettingEnd = false;
+        let isRunning = false;
+
+        // Initialize the grid
+        function initializeGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            grid = [];
+
+            for (let row = 0; row < GRID_ROWS; row++) {
+                const gridRow = [];
+                for (let col = 0; col < GRID_COLS; col++) {
+                    const cell = createCell(row, col);
+                    gridRow.push({
+                        element: cell,
+                        row,
+                        col,
+                        state: EMPTY,
+                        visited: false,
+                        parent: null,
+                        stepNumber: 0
+                    });
+                    gridElement.appendChild(cell);
+                }
+                grid.push(gridRow);
+            }
+        }
+
+        // Create a cell element
+        function createCell(row, col) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            
+            cell.addEventListener('click', () => handleCellClick(row, col));
+            cell.addEventListener('mouseenter', () => {
+                if (!isRunning) {
+                    updateStatus(`Cell (${row}, ${col})`);
+                }
+            });
+            
+            return cell;
+        }
+
+        // Generate random maze
+        function generateMaze() {
+            resetGrid();
+            grid.forEach(row => {
+                row.forEach(cell => {
+                    if (Math.random() < WALL_PROBABILITY) {
+                        setCellState(cell, WALL);
+                    }
+                });
+            });
+            updateStatus('Maze generated! Set start and end points.');
+        }
+
+        // Set cell state and update visualization
+        function setCellState(cell, state) {
+            cell.state = state;
+            cell.element.className = `cell ${state}`;
+        }
+
+        // Handle cell clicks
+        function handleCellClick(row, col) {
+            if (isRunning) return;
+            
+            const cell = grid[row][col];
+            
+            if (isSettingStart) {
+                if (startCell) setCellState(startCell, EMPTY);
+                startCell = cell;
+                setCellState(cell, START);
+                isSettingStart = false;
+                document.getElementById('setStart').classList.remove('active');
+                updateStatus('Start point set! Now set an end point.');
+            } else if (isSettingEnd) {if (endCell) setCellState(endCell, EMPTY);
+                endCell = cell;
+                setCellState(cell, END);
+                isSettingEnd = false;
+                document.getElementById('setEnd').classList.remove('active');
+                updateStatus('End point set! Click "Run BFS" to find the path.');
+            } else if (cell.state === EMPTY) {
+                setCellState(cell, WALL);
+            } else if (cell.state === WALL) {
+                setCellState(cell, EMPTY);
+            }
+        }
+
+        // BFS Implementation
+        async function runBFS() {
+            if (!startCell || !endCell) {
+                updateStatus('Please set both start and end points first!');
+                return;
+            }
+            
+            isRunning = true;
+            updateStatus('Running BFS...');
+            
+            const queue = [[startCell]];
+            const visited = new Set();
+            let stepCount = 0;
+            
+            while (queue.length > 0) {
+                const path = queue.shift();
+                const current = path[path.length - 1];
+                
+                if (current === endCell) {
+                    await visualizePath(path);
+                    isRunning = false;
+                    updateStatus('Path found! 🎉');
+                    return;
+                }
+                
+                if (!visited.has(`${current.row},${current.col}`)) {
+                    visited.add(`${current.row},${current.col}`);
+                    
+                    if (current !== startCell && current !== endCell) {
+                        setCellState(current, VISITED);
+                        current.element.innerHTML = `<span class="step-number">${++stepCount}</span>`;
+                        await sleep(50); // Animation delay
+                    }
+                    
+                    // Get neighboring cells
+                    const neighbors = getNeighbors(current);
+                    
+                    for (const neighbor of neighbors) {
+                        if (!visited.has(`${neighbor.row},${neighbor.col}`)) {
+                            const newPath = [...path, neighbor];
+                            queue.push(newPath);
+                            neighbor.parent = current;
+                        }
+                    }
+                }
+            }
+            
+            isRunning = false;
+            updateStatus('No path found! 😢');
+        }
+
+        // Get valid neighboring cells
+        function getNeighbors(cell) {
+            const neighbors = [];
+            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // Up, Down, Left, Right
+            
+            for (const [dx, dy] of directions) {
+                const newRow = cell.row + dx;
+                const newCol = cell.col + dy;
+                
+                if (newRow >= 0 && newRow < GRID_ROWS && 
+                    newCol >= 0 && newCol < GRID_COLS) {
+                    const neighbor = grid[newRow][newCol];
+                    if (neighbor.state !== WALL) {
+                        neighbors.push(neighbor);
+                    }
+                }
+            }
+            
+            return neighbors;
+        }
+
+        // Visualize the found path
+        async function visualizePath(path) {
+            for (let i = 1; i < path.length - 1; i++) {
+                const cell = path[i];
+                setCellState(cell, PATH);
+                
+                // Add direction arrow
+                const prev = path[i - 1];
+                const next = path[i + 1];
+                
+                const arrow = document.createElement('i');
+                arrow.className = 'fas arrow';
+                
+                if (next.row < cell.row) arrow.className += ' fa-arrow-up arrow-up';
+                else if (next.row > cell.row) arrow.className += ' fa-arrow-down arrow-down';
+                else if (next.col < cell.col) arrow.className += ' fa-arrow-left arrow-left';
+                else if (next.col > cell.col) arrow.className += ' fa-arrow-right arrow-right';
+                
+                cell.element.appendChild(arrow);
+                await sleep(100); // Animation delay
+            }
+        }
+
+        // Helper function for animations
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Reset the grid
+        function resetGrid() {
+            grid.forEach(row => {
+                row.forEach(cell => {
+                    setCellState(cell, EMPTY);
+                    cell.element.innerHTML = '';
+                    cell.visited = false;
+                    cell.parent = null;
+                    cell.stepNumber = 0;
+                });
+            });
+            startCell = null;
+            endCell = null;
+            isSettingStart = false;
+            isSettingEnd = false;
+            isRunning = false;
+            updateStatus('Grid reset! Select start and end points or generate a maze.');
+        }
+
+        // Update status message
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeGrid();
+            
+            document.getElementById('generateMaze').addEventListener('click', generateMaze);
+            
+            document.getElementById('setStart').addEventListener('click', () => {
+                if (!isRunning) {
+                    isSettingStart = true;
+                    isSettingEnd = false;
+                    document.getElementById('setStart').classList.add('active');
+                    document.getElementById('setEnd').classList.remove('active');
+                    updateStatus('Select a starting point...');
+                }
+            });
+            
+            document.getElementById('setEnd').addEventListener('click', () => {
+                if (!isRunning) {
+                    isSettingEnd = true;
+                    isSettingStart = false;
+                    document.getElementById('setEnd').classList.add('active');
+                    document.getElementById('setStart').classList.remove('active');
+                    updateStatus('Select an ending point...');
+                }
+            });
+            
+            document.getElementById('startBFS').addEventListener('click', () => {
+                if (!isRunning) {
+                    runBFS();
+                }
+            });
+            
+            document.getElementById('reset').addEventListener('click', resetGrid);
+        });
+    </script>
+</body>
+</html>
