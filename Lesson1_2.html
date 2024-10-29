@@ -53,20 +53,19 @@
             z-index: 1;
         }
 
-
         .text-box {
             position: absolute;
-            bottom: 20px;
+            bottom: 25%;
             left: 20px;
             right: 20px;
             background: rgba(20, 0, 40, 0.95);
-            padding: min(15px, 1.5vh);
+            padding: 20px;
             border-radius: 10px;
             border: 1px solid rgba(255, 158, 205, 0.3);
             z-index: 2;
             backdrop-filter: blur(10px);
             height: auto;
-            max-height: 22vh;
+            max-height: 30vh;
             display: flex;
             flex-direction: column;
         }
@@ -74,34 +73,35 @@
         .speaker {
             color: #ff9ecd;
             font-weight: bold;
-            font-size: min(1.2em, 2.5vh);
-            margin-bottom: min(10px, 1vh);
+            font-size: 1.4em;
+            margin-bottom: 12px;
             text-shadow: 0 0 15px rgba(255, 158, 205, 0.7);
         }
         
         .dialogue {
-            line-height: 1.4;
-            margin-bottom: min(15px, 1.5vh);
+            line-height: 1.5;
+            margin-bottom: 15px;
             color: #fff;
-            font-size: min(1em, 2vh);
+            font-size: 1.1em;
             text-shadow: 0 0 8px rgba(255, 158, 205, 0.4);
         }
         
         .choice-container {
             display: none;
-            gap: min(10px, 1vh);
+            gap: 12px;
             flex-direction: column;
         }
         
         .choice-btn {
             background: rgba(255, 158, 205, 0.15);
             border: 2px solid rgba(255, 158, 205, 0.4);
-            padding: min(8px, 0.8vh) min(15px, 1.5vw);
+            padding: 12px 20px;
             color: #ff9ecd;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.4s ease;
-            font-size: min(0.9em, 1.8vh);
+            font-size: 1.1em;
+            text-shadow: 0 0 8px rgba(255, 158, 205, 0.4);
         }
         
         .choice-btn:hover {
@@ -113,27 +113,15 @@
         .next-btn {
             background: rgba(255, 158, 205, 0.15);
             border: 2px solid rgba(255, 158, 205, 0.4);
-            padding: min(8px, 0.8vh) min(20px, 2vw);
+            padding: 12px 25px;
             color: #ff9ecd;
             border-radius: 8px;
             cursor: pointer;
             float: right;
             transition: all 0.4s ease;
-            font-size: min(1em, 2vh);
+            font-size: 1.2em;
+            text-shadow: 0 0 8px rgba(255, 158, 205, 0.4);
         }
-        
-
-
-
-        
-
-
-
-
-
-
-
-        
 
         .next-btn:hover {
             background: rgba(255, 158, 205, 0.25);
@@ -154,361 +142,324 @@
         </div>
     </div>
 
-<script>
+    <script>
+        function resizeCanvases() {
+            const container = document.querySelector('.game-container');
+            
+            const bgCanvas = document.querySelector('.background-canvas');
+            bgCanvas.width = container.offsetWidth;
+            bgCanvas.height = container.offsetHeight;
+            
+            const mazeCanvas = document.getElementById('mazeCanvas');
+            const containerAspect = container.offsetWidth / container.offsetHeight;
+            const mazeAspect = maze[0].length / maze.length;
+            
+            let width, height;
+            if (containerAspect > mazeAspect) {
+                height = container.offsetHeight * 0.7;
+                width = height * mazeAspect;
+            } else {
+                width = container.offsetWidth * 0.8;
+                height = width / mazeAspect;
+            }
+            
+            mazeCanvas.width = width;
+            mazeCanvas.height = height;
+            
+            drawMaze();
+        }
 
+        window.addEventListener('resize', resizeCanvases);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    function resizeCanvases() {
-        const container = document.querySelector('.game-container');
-        
-        // Background canvas
         const bgCanvas = document.querySelector('.background-canvas');
-        bgCanvas.width = container.offsetWidth;
-        bgCanvas.height = container.offsetHeight;
-        
-        // Maze canvas
+        const bgCtx = bgCanvas.getContext('2d');
         const mazeCanvas = document.getElementById('mazeCanvas');
-        // Calculate size based on container and maintain aspect ratio
-        const containerAspect = container.offsetWidth / container.offsetHeight;
-        const mazeAspect = maze[0].length / maze.length;
-        
-        let width, height;
-        if (containerAspect > mazeAspect) {
-            height = container.offsetHeight * 0.7;
-            width = height * mazeAspect;
-        } else {
-            width = container.offsetWidth * 0.8;
-            height = width / mazeAspect;
-        }
-        
-        mazeCanvas.width = width;
-        mazeCanvas.height = height;
-        
-        drawMaze();
-    }
+        const mazeCtx = mazeCanvas.getContext('2d');
 
-    window.addEventListener('resize', resizeCanvases);
+        const maze = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
 
-    const bgCanvas = document.querySelector('.background-canvas');
-    const bgCtx = bgCanvas.getContext('2d');
-    const mazeCanvas = document.getElementById('mazeCanvas');
-    const mazeCtx = mazeCanvas.getContext('2d');
-
-    const maze = [
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-        [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
-        [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    ];
-
-    class Particle {
-        constructor() {
-            this.reset();
-        }
-
-        reset() {
-            this.x = Math.random() * bgCanvas.width;
-            this.y = Math.random() * bgCanvas.height;
-            this.size = Math.random() * 3 + 1;
-            this.speedX = (Math.random() - 0.5) * 2;
-            this.speedY = (Math.random() - 0.5) * 2;
-            this.life = Math.random() * 0.5 + 0.5;
-            this.maxLife = this.life;
-        }
-
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            this.life -= 0.01;
-
-            if (this.life <= 0 || this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) {
+        class Particle {
+            constructor() {
                 this.reset();
             }
+
+            reset() {
+                this.x = Math.random() * bgCanvas.width;
+                this.y = Math.random() * bgCanvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 2;
+                this.speedY = (Math.random() - 0.5) * 2;
+                this.life = Math.random() * 0.5 + 0.5;
+                this.maxLife = this.life;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 0.01;
+
+                if (this.life <= 0 || this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                const alpha = (this.life / this.maxLife) * 0.5;
+                bgCtx.fillStyle = `rgba(255, 158, 205, ${alpha})`;
+                bgCtx.beginPath();
+                bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                bgCtx.fill();
+            }
         }
 
-        draw() {
-            const alpha = (this.life / this.maxLife) * 0.5;
-            bgCtx.fillStyle = `rgba(255, 158, 205, ${alpha})`;
-            bgCtx.beginPath();
-            bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            bgCtx.fill();
-        }
-    }
+        const particles = Array(150).fill().map(() => new Particle());
 
-    const particles = Array(150).fill().map(() => new Particle());
-
-    function drawBackground() {
-        const time = Date.now() / 2000;
-        
-        const gradient = bgCtx.createLinearGradient(0, 0, bgCanvas.width, bgCanvas.height);
-        gradient.addColorStop(0, `hsl(${time * 20 % 360}, 70%, 10%)`);
-        gradient.addColorStop(1, `hsl(${(time * 20 + 60) % 360}, 70%, 15%)`);
-        bgCtx.fillStyle = gradient;
-        bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
-
-        particles.forEach(particle => {
-            particle.update();
-            particle.draw();
-        });
-
-        for (let i = 0; i < 5; i++) {
-            const x = bgCanvas.width / 2 + Math.cos(time + i) * 300;
-            const y = bgCanvas.height / 2 + Math.sin(time + i * 2) * 150;
-            const gradient = bgCtx.createRadialGradient(x, y, 0, x, y, 200);
-            gradient.addColorStop(0, `hsla(${(time * 50 + i * 60) % 360}, 70%, 50%, 0.1)`);
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        function drawBackground() {
+            const time = Date.now() / 2000;
+            
+            const gradient = bgCtx.createLinearGradient(0, 0, bgCanvas.width, bgCanvas.height);
+            gradient.addColorStop(0, `hsl(${time * 20 % 360}, 70%, 10%)`);
+            gradient.addColorStop(1, `hsl(${(time * 20 + 60) % 360}, 70%, 15%)`);
             bgCtx.fillStyle = gradient;
-            bgCtx.beginPath();
-            bgCtx.arc(x, y, 200, 0, Math.PI * 2);
-            bgCtx.fill();
-        }
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
 
-        requestAnimationFrame(drawBackground);
-    }
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
 
-    const visited = new Set();
-
-    function drawMaze() {
-        mazeCtx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
-        
-        const cellSize = Math.min(mazeCanvas.width / maze[0].length, mazeCanvas.height / maze.length);
-        const offsetX = (mazeCanvas.width - maze[0].length * cellSize) / 2;
-        const offsetY = (mazeCanvas.height - maze.length * cellSize) / 2;
-
-        for (let y = 0; y < maze.length; y++) {
-            for (let x = 0; x < maze[0].length; x++) {
-                const cellX = offsetX + x * cellSize;
-                const cellY = offsetY + y * cellSize;
-
-                if (maze[y][x] === 1) {
-                    const gradient = mazeCtx.createLinearGradient(
-                        cellX, cellY,
-                        cellX + cellSize, cellY + cellSize
-                    );
-                    gradient.addColorStop(0, '#2a0a4a');
-                    gradient.addColorStop(1, '#4a1a6a');
-                    mazeCtx.fillStyle = gradient;
-                    mazeCtx.fillRect(cellX, cellY, cellSize, cellSize);
-                    
-                    mazeCtx.shadowColor = 'rgba(255, 158, 205, 0.5)';
-                    mazeCtx.shadowBlur = 10;
-                } else {
-                    mazeCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-                    mazeCtx.fillRect(cellX, cellY, cellSize, cellSize);
-                }
-
-                if (visited.has(`${y},${x}`)) {
-                    const gradient = mazeCtx.createRadialGradient(
-                        cellX + cellSize/2, cellY + cellSize/2, 0,
-                        cellX + cellSize/2, cellY + cellSize/2, cellSize
-                    );
-                    gradient.addColorStop(0, 'rgba(255, 158, 205, 0.6)');
-                    gradient.addColorStop(1, 'rgba(255, 158, 205, 0.2)');
-                    mazeCtx.fillStyle = gradient;
-                    mazeCtx.fillRect(cellX, cellY, cellSize, cellSize);
-                }
-                
-                mazeCtx.strokeStyle = 'rgba(255, 158, 205, 0.3)';
-                mazeCtx.strokeRect(cellX, cellY, cellSize, cellSize);
+            for (let i = 0; i < 5; i++) {
+                const x = bgCanvas.width / 2 + Math.cos(time + i) * 300;
+                const y = bgCanvas.height / 2 + Math.sin(time + i * 2) * 150;
+                const gradient = bgCtx.createRadialGradient(x, y, 0, x, y, 200);
+                gradient.addColorStop(0, `hsla(${(time * 50 + i * 60) % 360}, 70%, 50%, 0.1)`);
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                bgCtx.fillStyle = gradient;
+                bgCtx.beginPath();
+                bgCtx.arc(x, y, 200, 0, Math.PI * 2);
+                bgCtx.fill();
             }
-        }
-    }
 
-    async function depthFirstSearch(row, col) {
-        if (row < 0 || row >= maze.length || col < 0 || col >= maze[0].length) {
-            return;
-        }
-        
-        if (maze[row][col] === 1 || visited.has(`${row},${col}`)) {
-            return;
+            requestAnimationFrame(drawBackground);
         }
 
-        visited.add(`${row},${col}`);
-        
-        const cellSize = Math.min(mazeCanvas.width / maze[0].length, mazeCanvas.height / maze.length);
-        const offsetX = (mazeCanvas.width - maze[0].length * cellSize) / 2;
-        const offsetY = (mazeCanvas.height - maze.length * cellSize) / 2;
-        const cellX = offsetX + col * cellSize;
-        const cellY = offsetY + row * cellSize;
+        const visited = new Set();
 
-        for (let i = 0; i < 5; i++) {
-            const particle = new Particle();
-            particle.x = cellX + cellSize/2;
-            particle.y = cellY + cellSize/2;
-            particles.push(particle);
-        }
-        
-        drawMaze();
-        
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        await depthFirstSearch(row - 1, col);
-        await depthFirstSearch(row, col + 1);
-        await depthFirstSearch(row + 1, col);
-        await depthFirstSearch(row, col - 1);
-    }
-
-    const dialogues = [
-        {
-            speaker: "ARIA",
-            text: "Olá, meu amigo! Na lição anterior, exploramos as maravilhas da busca linear e binária. Agora, mergulhemos no fascinante mundo da busca em profundidade e vejamos como ela pode navegar por labirintos intrincados. Prepare-se para ficar deslumbrado!",
-            showVisualization: true,
-            animate: "depthFirstSearch"
-        },
-        {
-            speaker: "ARIA",
-            text: "A busca em profundidade é um algoritmo poderoso que explora um labirinto seguindo um caminho até onde for possível antes de retroceder e tentar uma rota diferente. Observe enquanto eu navego por este labirinto intrincado usando este método!",
-            showVisualization: true,
-            animate: "depthFirstSearch"
-        },
-        {
-            speaker: "ARIA",
-            text: "Você vê, a chave da busca em profundidade é sempre escolher o próximo vizinho não visitado e continuar mergulhando mais fundo no labirinto. Se eu chegar a um beco sem saída, basta que eu retroceda até o último ponto de ramificação e tente uma direção diferente.",
-            showVisualization: true,
-            animate: "depthFirstSearch"
-        },
-        {
-            speaker: "ARIA",
-            text: "Usando uma pilha para rastrear meu caminho, a busca em profundidade pode explorar eficientemente todas as rotas possíveis. Não é fascinante ver isso acontecer?",
-            showVisualization: true,
-            animate: "depthFirstSearch"
-        },
-        {
-            speaker: "ARIA",
-            text: "A busca em profundidade é incrivelmente poderosa, mas há outros algoritmos cativantes que podemos explorar, como a busca em largura. Você gostaria de saber mais sobre isso em seguida, ou tem outras perguntas sobre a busca em profundidade?",
-            choices: ["Conte-me sobre a busca em largura", "Tenho mais perguntas sobre a busca em profundidade"]
-        }
-    ];
-
-    let currentDialogue = 0;
-    const textBox = document.querySelector('.dialogue');
-    const speakerBox = document.querySelector('.speaker');
-    const nextBtn = document.querySelector('.next-btn');
-    const choiceContainer = document.querySelector('.choice-container');
-
-    function updateDialogue() {
-        if (currentDialogue >= dialogues.length) {
-            currentDialogue = 0;
-        }
-
-        const dialogue = dialogues[currentDialogue];
-        speakerBox.textContent = dialogue.speaker;
-        textBox.textContent = dialogue.text;
-
-        if (dialogue.showVisualization) {
-            drawMaze();
-            if (dialogue.animate === 'depthFirstSearch') {
-                visited.clear();
-                depthFirstSearch(1, 1);
-            }
-        } else {
+        function drawMaze() {
             mazeCtx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+            
+            const cellSize = Math.min(mazeCanvas.width / maze[0].length, mazeCanvas.height / maze.length);
+            const offsetX = (mazeCanvas.width - maze[0].length * cellSize) / 2;
+            const offsetY = (mazeCanvas.height - maze.length * cellSize) / 2;
+
+            for (let y = 0; y < maze.length; y++) {
+                for (let x = 0; x < maze[0].length; x++) {
+                    const cellX = offsetX + x * cellSize;
+                    const cellY = offsetY + y * cellSize;
+
+                    if (maze[y][x] === 1) {
+                        const gradient = mazeCtx.createLinearGradient(
+                            cellX, cellY,
+                            cellX + cellSize, cellY + cellSize
+                        );
+                        gradient.addColorStop(0, '#2a0a4a');
+                        gradient.addColorStop(1, '#4a1a6a');
+                        mazeCtx.fillStyle = gradient;
+                        mazeCtx.fillRect(cellX, cellY, cellSize, cellSize);
+                        
+                        mazeCtx.shadowColor = 'rgba(255, 158, 205, 0.5)';
+                        mazeCtx.shadowBlur = 10;
+                    } else {
+                        mazeCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                        mazeCtx.fillRect(cellX, cellY, cellSize, cellSize);
+                    }
+
+                    if (visited.has(`${y},${x}`)) {
+                        const gradient = mazeCtx.createRadialGradient(
+                            cellX + cellSize/2, cellY + cellSize/2, 0,
+                            cellX + cellSize/2, cellY + cellSize/2, cellSize
+                        );
+                        gradient.addColorStop(0, 'rgba(255, 158, 205, 0.6)');
+                        gradient.addColorStop(1, 'rgba(255, 158, 205, 0.2)');
+                        mazeCtx.fillStyle = gradient;
+                        mazeCtx.fillRect(cellX, cellY, cellSize, cellSize);
+                    }
+                    
+                    mazeCtx.strokeStyle = 'rgba(255, 158, 205, 0.3)';
+                    mazeCtx.strokeRect(cellX, cellY, cellSize, cellSize);
+                }
+            }
         }
 
-        showChoices(dialogue.choices);
-    }
+        async function depthFirstSearch(row, col) {
+            if (row < 0 || row >= maze.length || col < 0 || col >= maze[0].length) {
+                return;
+            }
+            
+            if (maze[row][col] === 1 || visited.has(`${row},${col}`)) {
+                return;
+            }
 
-    function showChoices(choices) {
-        if (!choices) {
-            choiceContainer.style.display = 'none';
-            nextBtn.style.display = 'block';
-            return;
+            visited.add(`${row},${col}`);
+            
+            const cellSize = Math.min(mazeCanvas.width / maze[0].length, mazeCanvas.height / maze.length);
+            const offsetX = (mazeCanvas.width - maze[0].length * cellSize) / 2;
+            const offsetY = (mazeCanvas.height - maze.length * cellSize) / 2;
+            const cellX = offsetX + col * cellSize;
+            const cellY = offsetY + row * cellSize;
+
+            for (let i = 0; i < 5; i++) {
+                const particle = new Particle();
+                particle.x = cellX + cellSize/2;
+                particle.y = cellY + cellSize/2;
+                particles.push(particle);
+            }
+            
+            drawMaze();
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            await depthFirstSearch(row - 1, col);
+            await depthFirstSearch(row, col + 1);
+            await depthFirstSearch(row + 1, col);
+            await depthFirstSearch(row, col - 1);
         }
 
-        choiceContainer.style.display = 'flex';
-        nextBtn.style.display = 'none';
-        choiceContainer.innerHTML = '';
-        
-        choices.forEach(choice => {
-            const button = document.createElement('button');
-            button.className = 'choice-btn';
-            button.textContent = choice;
-            button.onclick = () => handleChoice(choice);
-            choiceContainer.appendChild(button);
-        });
-    }
+        const dialogues = [
+            {
+                speaker: "ARIA",
+                text: "Oi pessoal! 👋 Depois de explorarmos as buscas linear e binária, vamos nos aventurar por algo ainda mais empolgante: a Busca em Profundidade! Imagina só poder encontrar a saída de qualquer labirinto... É isso que vou te ensinar! 🌟",
+                showVisualization: true
+            },
+            {
+                speaker: "ARIA",
+                text: "Sabe quando você está explorando uma caverna e decide seguir sempre em frente até não poder mais? 🚶‍♂️ A Busca em Profundidade faz exatamente isso! Ela escolhe um caminho e vai até o fim antes de tentar outras opções.",
+                showVisualization: true
+            },
+            {
+                speaker: "ARIA",
+                text: "Olha só esse labirinto! 🎮 Vou mostrar como a Busca em Profundidade funciona: ela marca cada lugar visitado (as células rosa) e sempre tenta ir o mais fundo possível por um caminho!",
+                showVisualization: true,
+                animate: "depthFirstSearch"
+            },
+            {
+                speaker: "ARIA",
+                text: "Percebeu como estou deixando um rastro rosa por onde passo? 🌸 Se chego num beco sem saída, volto até encontrar um novo caminho não explorado. É como ter um novelo de lã mágico guiando você!",
+                showVisualization: true,
+                animate: "depthFirstSearch"
+            },
+            {
+                speaker: "ARIA",
+                text: "E não é mágica, é matemática! 🧮 Uso uma 'pilha' para lembrar meu caminho - como migalhas de pão num conto de fadas digital! Assim nunca me perco e sempre posso voltar se precisar.",
+                showVisualization: true,
+                animate: "depthFirstSearch"
+            },
+            {
+                speaker: "ARIA",
+                text: "Fascinante, não é? 🌟 A Busca em Profundidade é perfeita para labirintos, mas também é usada em GPS, jogos e até redes sociais! Quer ver ela em ação mais uma vez ou prefere conhecer sua prima, a Busca em Largura?",
+                showVisualization: true,
+                choices: ["Quero ver a Busca em Profundidade novamente! 🔄", "Me conta sobre a Busca em Largura! 🆕", "Como isso é usado no mundo real? 🌍"]
+            },
+            {
+                speaker: "ARIA",
+                text: "No mundo real, a Busca em Profundidade é usada em navegação GPS para encontrar rotas, em jogos para a IA explorar diferentes possibilidades, e até no Facebook para encontrar 'amigos em comum'! Legal, né? 🚗🎮👥",
+                showVisualization: true,
+                choices: ["Quero ver a Busca em Profundidade novamente! 🔄", "Me conta sobre a Busca em Largura! 🆕"]
+            }
+        ];
 
-    function handleChoice(choice) {
-        switch(choice) {
-            case "Conte-me sobre a busca em largura":
-                window.location.href = "Lesson1_3.html";
-                break;
-            case "Tenho mais perguntas sobre a busca em profundidade":
-                currentDialogue++;
-                updateDialogue();
-                break;
+        let currentDialogue = 0;
+        const textBox = document.querySelector('.dialogue');
+        const speakerBox = document.querySelector('.speaker');
+        const nextBtn = document.querySelector('.next-btn');
+        const choiceContainer = document.querySelector('.choice-container');
+
+        function updateDialogue() {
+            if (currentDialogue >= dialogues.length) {
+                currentDialogue = dialogues.length - 1;
+            }
+
+            const dialogue = dialogues[currentDialogue];
+            speakerBox.textContent = dialogue.speaker;
+            textBox.textContent = dialogue.text;
+
+            if (dialogue.showVisualization) {
+                drawMaze();
+                if (dialogue.animate === 'depthFirstSearch') {
+                    visited.clear();
+                    depthFirstSearch(1, 1);
+                }
+            } else {
+                mazeCtx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+            }
+
+            showChoices(dialogue.choices);
         }
-    }
 
-    nextBtn.onclick = () => {
-        currentDialogue++;
+        function showChoices(choices) {
+            if (!choices) {
+                choiceContainer.style.display = 'none';
+                nextBtn.style.display = 'block';
+                return;
+            }
+
+            choiceContainer.style.display = 'flex';
+            nextBtn.style.display = 'none';
+            choiceContainer.innerHTML = '';
+            
+            choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn';
+                button.textContent = choice;
+                button.onclick = () => handleChoice(choice);
+                choiceContainer.appendChild(button);
+            });
+        }
+
+        function handleChoice(choice) {
+            switch(choice) {
+                case "Quero ver a Busca em Profundidade novamente! 🔄":
+                    currentDialogue = 2;  // Return to the demonstration
+                    visited.clear();
+                    updateDialogue();
+                    break;
+                case "Me conta sobre a Busca em Largura! 🆕":
+                    window.location.href = "Lesson1_3.html";
+                    break;
+                case "Como isso é usado no mundo real? 🌍":
+                    currentDialogue = 6;  // Show real-world applications
+                    updateDialogue();
+                    break;
+                default:
+                    currentDialogue++;
+                    updateDialogue();
+            }
+        }
+
+        nextBtn.onclick = () => {
+            currentDialogue++;
+            updateDialogue();
+        };
+
+        resizeCanvases();
+        drawBackground();
         updateDialogue();
-    };
-
-    resizeCanvases();
-    drawBackground();
-    updateDialogue();
-</script>
+    </script>
 </body>
 </html>
-
