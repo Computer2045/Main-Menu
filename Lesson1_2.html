@@ -55,7 +55,7 @@
 
         .text-box {
             position: absolute;
-            bottom: 10%;
+            bottom: 25%;
             left: 20px;
             right: 20px;
             background: rgba(20, 0, 40, 0.95);
@@ -68,7 +68,6 @@
             max-height: 30vh;
             display: flex;
             flex-direction: column;
-            position: relative;
         }
         
         .speaker {
@@ -88,16 +87,9 @@
         }
         
         .choice-container {
-            position: absolute;
-            bottom: calc(100% + 10px);
-            left: 0;
-            right: 0;
             display: none;
             gap: 12px;
-            flex-direction: row;
-            justify-content: center;
-            flex-wrap: wrap;
-            padding: 0 20px;
+            flex-direction: column;
         }
         
         .choice-btn {
@@ -110,9 +102,6 @@
             transition: all 0.4s ease;
             font-size: 1.1em;
             text-shadow: 0 0 8px rgba(255, 158, 205, 0.4);
-            min-width: 200px;
-            margin: 0 5px;
-            white-space: nowrap;
         }
         
         .choice-btn:hover {
