@@ -1,1 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>ARIA's Algorithm Academy: BFS Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        :root {
+            --neon-pink: #ff69b4;
+            --dark-space: #0a0a2a;
+            --cyber-blue: #00ffff;
+            --text-bg: rgba(0, 0, 0, 0.85);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--dark-space);
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            touch-action: manipulation;
+        }
 
+        #app {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(45deg, #0a0a2a 0%, #1a1a4a 100%);
+            overflow: hidden;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a4a 0%, #0a0a2a 100%);
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        #character-area {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            transform: translateY(-10vh);
+        }
+
+        #aria-container {
+            position: relative;
+            width: auto;
+            height: 80vh;
+            margin-bottom: -5vh;
+        }
+
+        #aria-container img {
+            height: 100%;
+            width: auto;
+            filter: drop-shadow(0 0 20px var(--neon-pink));
+        }
+
+        #maze-container {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--text-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--cyber-blue);
+            display: none;
+            z-index: 20;
+        }
+
+        .maze-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .maze-cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #333;
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+
+        #dialog-overlay {
+            position: absolute;
+            bottom: 5vh;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, var(--text-bg) 20%);
+            z-index: 10;
+        }
+
+        #dialog-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        #character-name {
+            color: var(--neon-pink);
+            font-size: 2em;
+            text-shadow: 0 0 10px var(--neon-pink);
+            margin-bottom: 10px;
+        }
+
+        #dialog-text {
+            font-size: 1.4em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #choices {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .choice-btn {
+            background: var(--text-bg);
+            color: var(--cyber-blue);
+            border: 2px solid var(--cyber-blue);
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+            font-size: 1.2em;
+            backdrop-filter: blur(5px);
+        }
+
+        .choice-btn:hover {
+            background: var(--cyber-blue);
+            color: var(--dark-space);
+            box-shadow: 0 0 20px var(--cyber-blue);
+        }
+
+        #progress-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 30;
+        }
+
+        #progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        #progress {
+            width: 0%;
+            height: 100%;
+            background: var(--neon-pink);
+            transition: width 0.5s;
+        }
+
+        .wall { background: #444; }
+        .path { background: #111; }
+        .visited { 
+            background: rgba(255, 105, 180, 0.3);
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+        .current { 
+            background: var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+        .queue { 
+            background: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 10px var(--cyber-blue);
+        }
+        .start { 
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        .end { 
+            background: #ff0000;
+            box-shadow: 0 0 10px #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="stars" id="stars"></div>
+        <div id="character-area">
+            <div id="aria-container">
+                <img src="ARIA.png" alt="ARIA" />
+            </div>
+        </div>
+        <div id="maze-container"></div>
+        <div id="dialog-overlay">
+            <div id="dialog-content">
+                <div id="character-name">ARIA</div>
+                <div id="dialog-text"></div>
+                <div id="choices"></div>
+            </div>
+        </div>
+        <div id="progress-container">
+            <div id="progress-bar">
+                <div id="progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DialogSystem {
+            constructor() {
+                this.currentStep = 0;
+                this.dialogText = document.getElementById('dialog-text');
+                this.choicesContainer = document.getElementById('choices');
+                this.mazeContainer = document.getElementById('maze-container');
+                this.progressBar = document.getElementById('progress');
+                this.isVisualizing = false;
+                this.maze = null;
+                this.MAZE_SIZE = 8;
+                
+                this.initializeStars();
+                this.setupAriaImage();
+                this.initializeDialog();
+            }
+
+            dialog = [
+                {
+                    text: "Olá! Hoje vamos explorar um algoritmo super interessante chamado Busca em Largura, ou BFS. É como jogar um pedra na água e ver as ondas se espalhando!",
+                    choices: ["Legal, me mostra!", "Parece divertido!"]
+                },
+                {
+                    text: "Imagina que você está em um labirinto e quer encontrar a saída. O BFS vai explorar todos os caminhos próximos antes de ir mais longe, igual às ondas na água!",
+                    choices: ["Ver na prática", "Mostre como é!"],
+                    action: "showMaze"
+                },
+                {
+                    text: "Neste labirinto, vamos começar do quadrado verde e tentar chegar ao vermelho. Observe como o algoritmo vai explorar em 'ondas', igual aquele exemplo da água!",
+                    choices: ["Começar exploração", "Iniciar busca"],
+                    action: "visualize"
+                },
+                {
+                    text: "As células rosa já foram visitadas, as azuis estão esperando para serem exploradas, e a rosa brilhante é onde estamos agora! Legal, né?",
+                    choices: ["Muito legal!", "Continuar"],
+                    action: "continue"
+                },
+                {
+                    text: "E assim o BFS encontra sempre o caminho mais curto! Incrível como ele explora tudo em ondas, né? Quer ver de novo ou vamos para o próximo assunto?",
+                    choices: ["Ver novamente", "Próxima lição"],
+                    action: "repeat"
+                }
+            ];
+
+            initializeStars() {
+                const starsContainer = document.getElementById('stars');
+                const numStars = 100;
+                
+                for (let i = 0; i < numStars; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.cssText = `
+                        left: ${Math.random() * 100}%;
+                        top: ${Math.random() * 100}%;
+                        width: ${Math.random() * 2 + 1}px;
+                        height: ${Math.random() * 2 + 1}px;
+                        --duration: ${Math.random() * 3 + 2}s;
+                    `;
+                    starsContainer.appendChild(star);
+                }
+            }
+
+            setupAriaImage() {
+                const ariaImg = document.querySelector('#aria-container img');
+                ariaImg.onerror = () => {
+                    console.warn('ARIA.png not found, falling back to placeholder');
+                    ariaImg.src = '/api/placeholder/500/800';
+                };
+            }
+
+createMaze() {
+                this.maze = [
+                    [0, 0, 0, 1, 0, 0, 0, 0],
+                    [1, 1, 0, 1, 0, 1, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 1, 1, 1, 1, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 1, 1, 1, 1, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 'E', 0]
+                ];
+
+                this.mazeContainer.innerHTML = '';
+                
+                for (let i = 0; i < this.maze.length; i++) {
+                    const row = document.createElement('div');
+                    row.className = 'maze-row';
+                    
+                    for (let j = 0; j < this.maze[i].length; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'maze-cell';
+                        cell.classList.add(this.maze[i][j] === 1 ? 'wall' : 'path');
+                        
+                        if (i === 0 && j === 0) cell.classList.add('start');
+                        if (this.maze[i][j] === 'E') cell.classList.add('end');
+                        
+                        cell.dataset.row = i;
+                        cell.dataset.col = j;
+                        
+                        row.appendChild(cell);
+                    }
+                    
+                    this.mazeContainer.appendChild(row);
+                }
+            }
+
+            async startBFSVisualization() {
+                if (this.isVisualizing) return;
+                this.isVisualizing = true;
+                
+                this.resetVisualization();
+                
+                const queue = [[0, 0]];
+                const visited = new Set();
+                const parent = new Map();
+                const endPos = [7, 6]; // Position of 'E'
+                
+                while (queue.length > 0 && this.isVisualizing) {
+                    const [row, col] = queue.shift();
+                    const key = `${row},${col}`;
+                    
+                    if (visited.has(key)) continue;
+                    visited.add(key);
+                    
+                    const currentCell = this.getCellElement(row, col);
+                    if (!currentCell.classList.contains('start') && 
+                        !currentCell.classList.contains('end')) {
+                        currentCell.classList.add('current');
+                        currentCell.classList.add('visited');
+                        await this.delay(300);
+                        currentCell.classList.remove('current');
+                    }
+                    
+                    // Check if reached end
+                    if (row === endPos[0] && col === endPos[1]) {
+                        // Highlight path
+                        let current = [row, col];
+                        while (parent.has(`${current[0]},${current[1]}`)) {
+                            const cell = this.getCellElement(current[0], current[1]);
+                            if (cell && !cell.classList.contains('start') && 
+                                !cell.classList.contains('end')) {
+                                cell.style.backgroundColor = '#ffd700';
+                                cell.style.boxShadow = '0 0 15px #ffd700';
+                            }
+                            current = parent.get(`${current[0]},${current[1]}`);
+                            await this.delay(200);
+                        }
+                        setTimeout(() => {
+                            this.isVisualizing = false;
+                            this.showDialog(this.currentStep + 1);
+                        }, 1000);
+                        return;
+                    }
+                    
+                    const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+                    for (const [dx, dy] of directions) {
+                        const newRow = row + dx;
+                        const newCol = col + dy;
+                        
+                        if (this.isValidCell(newRow, newCol) && 
+                            !this.isWall(newRow, newCol) && 
+                            !visited.has(`${newRow},${newCol}`)) {
+                            queue.push([newRow, newCol]);
+                            parent.set(`${newRow},${newCol}`, [row, col]);
+                            
+                            const neighborCell = this.getCellElement(newRow, newCol);
+                            if (!neighborCell.classList.contains('end')) {
+                                neighborCell.classList.add('queue');
+                            }
+                            await this.delay(100);
+                        }
+                    }
+                }
+                
+                this.isVisualizing = false;
+            }
+
+            getCellElement(row, col) {
+                return this.mazeContainer.children[row].children[col];
+            }
+
+            isWall(row, col) {
+                return this.maze[row][col] === 1;
+            }
+
+            isValidCell(row, col) {
+                return row >= 0 && row < this.MAZE_SIZE && col >= 0 && col < this.MAZE_SIZE;
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            resetVisualization() {
+                const cells = this.mazeContainer.querySelectorAll('.maze-cell');
+                cells.forEach(cell => {
+                    cell.classList.remove('visited', 'queue', 'current');
+                    cell.style.backgroundColor = '';
+                    cell.style.boxShadow = '';
+                    if (!cell.classList.contains('wall') && 
+                        !cell.classList.contains('start') && 
+                        !cell.classList.contains('end')) {
+                        cell.classList.add('path');
+                    }
+                });
+            }
+
+            showDialog(step) {
+                this.currentStep = step;
+                const dialog = this.dialog[step];
+                
+                this.dialogText.textContent = dialog.text;
+                this.choicesContainer.innerHTML = '';
+                
+                dialog.choices.forEach((choice, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'choice-btn';
+                    button.textContent = choice;
+                    button.onclick = () => this.handleChoice(choice, index);
+                    this.choicesContainer.appendChild(button);
+                });
+
+                if (dialog.action === "showMaze" && !this.maze) {
+                    this.createMaze();
+                    this.mazeContainer.style.display = 'block';
+                }
+
+                this.updateProgress();
+            }
+
+            handleChoice(choice, index) {
+                const currentDialog = this.dialog[this.currentStep];
+                
+                switch (currentDialog.action) {
+                    case "visualize":
+                        if (choice.toLowerCase().includes("começar") || 
+                            choice.toLowerCase().includes("iniciar")) {
+                            this.startBFSVisualization();
+                            return;
+                        }
+                        break;
+                        
+                    case "continue":
+                        this.showDialog(this.currentStep + 1);
+                        return;
+                        
+                    case "repeat":
+                        if (choice.toLowerCase().includes("novamente")) {
+                            this.resetVisualization();
+                            this.showDialog(2);
+                            return;
+                        }
+                        if (choice.toLowerCase().includes("próxima")) {
+                            window.location.href = 'Lesson1_5.html';
+                            return;
+                        }
+                        break;
+                }
+
+                // Default progression
+                if (this.currentStep < this.dialog.length - 1) {
+                    this.showDialog(this.currentStep + 1);
+                }
+            }
+
+            updateProgress() {
+                const progress = (this.currentStep / (this.dialog.length - 1)) * 100;
+                this.progressBar.style.width = `${progress}%`;
+            }
+
+            initializeDialog() {
+                this.showDialog(0);
+            }
+        }
+
+        // Initialize the dialog system when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const dialogSystem = new DialogSystem();
+        });
+    </script>
+</body>
+</html>
