@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intro to Search Algorithms for AI</title>
+    <title>Introdução aos Algoritmos de Busca para IA</title>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -239,59 +239,59 @@
 <body>
     <div class="cyber-line"></div>
     <div class="container">
-        <h1 class="title">Intro to Search Algorithms for AI</h1>
+        <h1 class="title">Introdução aos Algoritmos de Busca para IA</h1>
         
         <div class="menu-grid">
-            <button class="menu-button" onclick="toggleSubmenu('lessons')">View Lessons</button>
-            <button class="menu-button" onclick="toggleSubmenu('games')">Interactive Games</button>
-            <button class="menu-button" onclick="toggleSubmenu('quizzes')">Quizzes</button>
+            <button class="menu-button" onclick="toggleSubmenu('lessons')">Ver Aulas</button>
+            <button class="menu-button" onclick="toggleSubmenu('games')">Jogos Interativos</button>
+            <button class="menu-button" onclick="toggleSubmenu('quizzes')">Questionários</button>
             <button class="menu-button" onclick="showTutorialConfirm()">Tutorial</button>
-            <button class="menu-button" onclick="showCredits()">Credits</button>
-            <button class="menu-button" onclick="window.location.href='index.html'">Main Menu</button>
+            <button class="menu-button" onclick="showCredits()">Créditos</button>
+            <button class="menu-button" onclick="window.location.href='index.html'">Menu Principal</button>
         </div>
 
         <div id="lessonsSubmenu" class="submenu">
-            <a href="Lesson1.html" class="submenu-button">Lesson 1</a>
-            <a href="Lesson2.html" class="submenu-button">Lesson 2</a>
-            <a href="Lesson3.html" class="submenu-button">Lesson 3</a>
-            <a href="Lesson4.html" class="submenu-button">Lesson 4</a>
-            <a href="Lesson5.html" class="submenu-button">Lesson 5</a>
-            <a href="Lesson6.html" class="submenu-button">Lesson 6</a>
+            <a href="Lesson1.html" class="submenu-button">Aula 1</a>
+            <a href="Lesson2.html" class="submenu-button">Aula 2</a>
+            <a href="Lesson3.html" class="submenu-button">Aula 3</a>
+            <a href="Lesson4.html" class="submenu-button">Aula 4</a>
+            <a href="Lesson5.html" class="submenu-button">Aula 5</a>
+            <a href="Lesson6.html" class="submenu-button">Aula 6</a>
         </div>
 
         <div id="gamesSubmenu" class="submenu">
-            <a href="Interactivegame1.html" class="submenu-button">Game 1</a>
-            <a href="Interactivegame2.html" class="submenu-button">Game 2</a>
-            <a href="Interactivegame3.html" class="submenu-button">Game 3</a>
-            <a href="Interactivegame4.html" class="submenu-button">Game 4</a>
-            <a href="Interactivegame5.html" class="submenu-button">Game 5</a>
-            <a href="Interactivegame6.html" class="submenu-button">Game 6</a>
+            <a href="Interactivegame1.html" class="submenu-button">Jogo 1</a>
+            <a href="Interactivegame2.html" class="submenu-button">Jogo 2</a>
+            <a href="Interactivegame3.html" class="submenu-button">Jogo 3</a>
+            <a href="Interactivegame4.html" class="submenu-button">Jogo 4</a>
+            <a href="Interactivegame5.html" class="submenu-button">Jogo 5</a>
+            <a href="Interactivegame6.html" class="submenu-button">Jogo 6</a>
         </div>
 
         <div id="quizzesSubmenu" class="submenu">
-            <a href="Quiz1.html" class="submenu-button">Quiz 1</a>
-            <a href="Quiz2.html" class="submenu-button">Quiz 2</a>
-            <a href="Quiz3.html" class="submenu-button">Quiz 3</a>
-            <a href="Quiz4.html" class="submenu-button">Quiz 4</a>
-            <a href="Quiz5.html" class="submenu-button">Quiz 5</a>
-            <a href="Quiz6.html" class="submenu-button">Quiz 6</a>
+            <a href="Quiz1.html" class="submenu-button">Questionário 1</a>
+            <a href="Quiz2.html" class="submenu-button">Questionário 2</a>
+            <a href="Quiz3.html" class="submenu-button">Questionário 3</a>
+            <a href="Quiz4.html" class="submenu-button">Questionário 4</a>
+            <a href="Quiz5.html" class="submenu-button">Questionário 5</a>
+            <a href="Quiz6.html" class="submenu-button">Questionário 6</a>
         </div>
 
         <div id="credits" class="credits">
-            <h2>Credits</h2>
+            <h2>Créditos</h2>
             <p>Computer2045</p>
-            <p>Computer Scientist and AI Scholar</p>
-            <button class="back-button" onclick="hideCredits()">Return</button>
+            <p>Cientista da Computação e Estudioso de IA</p>
+            <button class="back-button" onclick="hideCredits()">Voltar</button>
         </div>
     </div>
 
     <div id="tutorialModal" class="modal">
         <div class="modal-content">
-            <h2>Start Tutorial?</h2>
-            <p>Would you like to begin the tutorial section?</p>
+            <h2>Iniciar Tutorial?</h2>
+            <p>Você gostaria de começar a seção de tutorial?</p>
             <div class="modal-buttons">
-                <button class="modal-button" onclick="startTutorial()">Yes</button>
-                <button class="modal-button" onclick="closeTutorialModal()">No</button>
+                <button class="modal-button" onclick="startTutorial()">Sim</button>
+                <button class="modal-button" onclick="closeTutorialModal()">Não</button>
             </div>
         </div>
     </div>
@@ -304,7 +304,7 @@
             const submenu = document.getElementById(type + 'Submenu');
             const button = document.querySelector(`[onclick="toggleSubmenu('${type}')"]`);
             
-            // If clicking the same button, close it
+            // Se clicar no mesmo botão, fecha
             if (activeSubmenu === type) {
                 submenu.classList.remove('active');
                 button.classList.remove('active');
@@ -312,7 +312,7 @@
                 return;
             }
             
-            // Hide all submenus and remove active states
+            // Esconde todos os submenus e remove estados ativos
             document.querySelectorAll('.submenu').forEach(menu => {
                 menu.classList.remove('active');
             });
@@ -320,12 +320,12 @@
                 btn.classList.remove('active');
             });
             
-            // Hide credits if showing
+            // Esconde créditos se estiverem visíveis
             document.getElementById('credits').style.display = 'none';
             document.querySelector('.back-button').style.display = 'none';
             creditsVisible = false;
             
-            // Show selected submenu
+            // Mostra o submenu selecionado
             submenu.classList.add('active');
             button.classList.add('active');
             activeSubmenu = type;
@@ -344,7 +344,7 @@
         }
 
         function showCredits() {
-            // Hide all submenus and remove active states
+            // Esconde todos os submenus e remove estados ativos
             document.querySelectorAll('.submenu').forEach(menu => {
                 menu.classList.remove('active');
             });
@@ -355,7 +355,7 @@
             const credits = document.getElementById('credits');
             const backButton = document.querySelector('.back-button');
             
-            // Toggle credits visibility
+            // Alterna visibilidade dos créditos
             if (creditsVisible) {
                 credits.style.display = 'none';
                 backButton.style.display = 'none';
