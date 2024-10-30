@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<!-- [Previous head section and styles remain exactly the same until menu items] -->
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Learning Platform</title>
+    <title>Plataforma de Aprendizado de IA</title>
     <style>
         :root {
             --primary: #0ff;
@@ -22,6 +21,7 @@
         body {
             background-color: var(--bg-dark);
             min-height: 100vh;
+            min-height: 100dvh;
             font-family: 'Segoe UI', system-ui, sans-serif;
             color: white;
             overflow: hidden;
@@ -54,6 +54,7 @@
             width: 100%;
             max-width: 1400px;
             height: 100vh;
+            height: 100dvh;
             padding: 2rem;
             position: relative;
             display: flex;
@@ -255,15 +256,34 @@
                 font-size: 3.5rem;
             }
         }
+
+        #fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        #fullscreen-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
     <div class="cyber-grid"></div>
     <div class="scanline"></div>
     <div class="orbital-particles" id="orbitals"></div>
+    <button id="fullscreen-btn">Tela Cheia</button>
 
     <div class="container">
-        <h1 class="title"><span>AI Learning Platform</span></h1>
+        <h1 class="title"><span>Plataforma de Aprendizado de IA</span></h1>
         
         <div class="menu-container">
             <a href="search.html" class="menu-item">
@@ -271,12 +291,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">🔍</div>
-                            <h2 class="card-title">Search</h2>
+                            <h2 class="card-title">Busca</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Master AI search algorithms</p>
+                            <p class="card-description">Domine algoritmos de busca em IA</p>
                         </div>
                     </div>
                 </div>
@@ -287,12 +307,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">🧠</div>
-                            <h2 class="card-title">Knowledge</h2>
+                            <h2 class="card-title">Conhecimento</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Explore knowledge systems</p>
+                            <p class="card-description">Explore sistemas de conhecimento</p>
                         </div>
                     </div>
                 </div>
@@ -303,12 +323,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">🎲</div>
-                            <h2 class="card-title">Uncertainty</h2>
+                            <h2 class="card-title">Incerteza</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Master probabilistic AI</p>
+                            <p class="card-description">Domine IA probabilística</p>
                         </div>
                     </div>
                 </div>
@@ -319,12 +339,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">📈</div>
-                            <h2 class="card-title">Optimization</h2>
+                            <h2 class="card-title">Otimização</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Perfect AI solutions</p>
+                            <p class="card-description">Aperfeiçoe soluções de IA</p>
                         </div>
                     </div>
                 </div>
@@ -335,12 +355,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">📚</div>
-                            <h2 class="card-title">Learning</h2>
+                            <h2 class="card-title">Aprendizado</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Discover machine learning</p>
+                            <p class="card-description">Descubra o aprendizado de máquina</p>
                         </div>
                     </div>
                 </div>
@@ -351,12 +371,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">🔮</div>
-                            <h2 class="card-title">Neural Nets</h2>
+                            <h2 class="card-title">Redes Neurais</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Deep learning mastery</p>
+                            <p class="card-description">Domine deep learning</p>
                         </div>
                     </div>
                 </div>
@@ -367,12 +387,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">💭</div>
-                            <h2 class="card-title">Language</h2>
+                            <h2 class="card-title">Linguagem</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Natural language AI</p>
+                            <p class="card-description">IA de linguagem natural</p>
                         </div>
                     </div>
                 </div>
@@ -383,12 +403,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">🌌</div>
-                            <h2 class="card-title">Other Courses</h2>
+                            <h2 class="card-title">Outros Cursos</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Explore more AI topics</p>
+                            <p class="card-description">Explore mais tópicos de IA</p>
                         </div>
                     </div>
                 </div>
@@ -399,12 +419,12 @@
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-icon">ℹ️</div>
-                            <h2 class="card-title">About</h2>
+                            <h2 class="card-title">Sobre</h2>
                         </div>
                     </div>
                     <div class="card-face card-back">
                         <div class="card-content">
-                            <p class="card-description">Learn about our platform</p>
+                            <p class="card-description">Conheça nossa plataforma</p>
                         </div>
                     </div>
                 </div>
@@ -433,6 +453,65 @@
             
             orbitalsContainer.appendChild(orbital);
         }
+
+        // Fullscreen functionality
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && 
+                !document.mozFullScreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.msFullscreenElement) {
+                // Request fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        // Attach fullscreen button click handler
+        document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
+
+        // Auto-request fullscreen on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to request fullscreen automatically
+            const tryFullscreen = () => {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(() => {
+                        // Fullscreen request failed - button is still available
+                    });
+                }
+            };
+            
+            // Attempt fullscreen on first user interaction
+            const handleFirstInteraction = () => {
+                tryFullscreen();
+                // Remove the event listeners after first interaction
+                document.removeEventListener('click', handleFirstInteraction);
+                document.removeEventListener('touchstart', handleFirstInteraction);
+                document.removeEventListener('keydown', handleFirstInteraction);
+            };
+
+            // Add event listeners for first interaction
+            document.addEventListener('click', handleFirstInteraction);
+            document.addEventListener('touchstart', handleFirstInteraction);
+            document.addEventListener('keydown', handleFirstInteraction);
+        });
     </script>
 </body>
 </html>
